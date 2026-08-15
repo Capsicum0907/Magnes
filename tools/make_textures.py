@@ -26,37 +26,65 @@ SIZE = 16
 OUT = pathlib.Path(__file__).resolve().parents[1] / "src/main/resources/assets/magnes/textures/item/magnet.png"
 
 # --- shape -----------------------------------------------------------------
-# A horseshoe lying on its side, opening to the right: a spine down the left and
-# two arms reaching off it.
-#
-# Not standing upright with the opening downward. Drawn that way the two arms read
-# as legs, and with pale tips the whole thing turns into a pair of red trousers.
-# Which way round a shape faces is not a detail at sixteen pixels.
+# A bar, not a horseshoe. A horseshoe at this size has arms four pixels wide, which
+# is not enough to write in, and read as legs besides. A bar spends the whole
+# sixteen on being two coloured halves, which is the thing that says "magnet".
 
-SPINE = {y: range(3, 7) for y in range(2, 14)}
-ARMS = {**{y: range(3, 14) for y in range(2, 6)},
-        **{y: range(3, 14) for y in range(10, 14)}}
+LEFT, RIGHT = 1, 14          # inclusive, so the bar is fourteen wide
+TOP, BOTTOM = 4, 12          # inclusive, nine tall: five for a letter and two margins
+SPLIT = 8                    # first column of the south half
 
-
-def cells(rows) -> set[tuple[int, int]]:
-    return {(x, y) for y, xs in rows.items() for x in xs}
-
-
-SHAPE = cells(SPINE) | cells(ARMS)
-
-# The halves, split across the bend. Each arm carries its own pole all the way to
-# the tip, which is how a magnet is drawn everywhere it is drawn: not a body with
-# separate ends, but two coloured halves that meet.
-NORTH = {(x, y) for (x, y) in SHAPE if y <= 7}
+SHAPE = {(x, y) for x in range(LEFT, RIGHT + 1) for y in range(TOP, BOTTOM + 1)}
+NORTH = {(x, y) for (x, y) in SHAPE if x < SPLIT}
 SOUTH = SHAPE - NORTH
 
+# --- lettering -------------------------------------------------------------
+# Four wide by five tall is the smallest an N and an S can be and still be an N and
+# an S: three wide leaves no column for the diagonal.
+
+GLYPHS = {
+    "N": [
+        "X..X",
+        "XX.X",
+        "X.XX",
+        "X..X",
+        "X..X",
+    ],
+    "S": [
+        ".XXX",
+        "X...",
+        ".XX.",
+        "...X",
+        "XXX.",
+    ],
+}
+
+LETTER_TOP = 6
+LETTERS = {"N": 2, "S": 9}   # leftmost column of each glyph
+
+
+def lettering() -> set[tuple[int, int]]:
+    marked = set()
+    for glyph, left in LETTERS.items():
+        for row, line in enumerate(GLYPHS[glyph]):
+            for column, cell in enumerate(line):
+                if cell == "X":
+                    marked.add((left + column, LETTER_TOP + row))
+    return marked
+
+
+MARKS = lettering()
+
 # --- colour ----------------------------------------------------------------
-# (light, body, shadow) per pole.
+# (light, body, shadow) per pole. The lettering is flat: shading a four-pixel-wide
+# glyph only makes it harder to read.
 
 PALETTE = {
     "north": ("#E04A4A", "#C4212A", "#8A1219"),
     "south": ("#3A5FC8", "#1E3F9E", "#14276B"),
 }
+
+MARK_COLOUR = "#F2F2F2"
 
 
 def _rgba(colour: str) -> tuple[int, int, int, int]:
@@ -105,6 +133,8 @@ def draw() -> bytes:
         # other.
         tones = PALETTE["north"] if pixel in NORTH else PALETTE["south"]
         pixels[pixel] = _rgba(_tone(pixel, SHAPE, tones))
+    for pixel in MARKS:
+        pixels[pixel] = _rgba(MARK_COLOUR)
     return _png(pixels)
 
 
