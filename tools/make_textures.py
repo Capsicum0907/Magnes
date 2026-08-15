@@ -60,7 +60,7 @@ GLYPHS = {
 }
 
 LETTER_TOP = 6
-LETTERS = {"N": 2, "S": 9}   # leftmost column of each glyph
+LETTERS = {"N": 3, "S": 9}   # leftmost column of each glyph
 
 
 def lettering() -> set[tuple[int, int]]:
