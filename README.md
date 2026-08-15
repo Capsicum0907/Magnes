@@ -4,7 +4,8 @@ Items and experience come to you.
 
 *Magnes* is Latin for a magnet, and the lodestone it is cut from.
 
-> **Status: scaffold only.** The mod loads and does nothing.
+> **Status: stage 2.** The magnet works and six game tests pass headlessly.
+> Not yet watched in a running client.
 
 ## Target
 
@@ -40,7 +41,24 @@ Which one is a setting, not a decision made here.
 
 Reach, on and off, and what kinds of thing are pulled are settings too. This is the
 mod where a number written into the code would be the first thing anybody wants to
-change.
+change. They *can* be settings — unlike a tool's mining reach, which is baked into
+a data component when the item is registered — because every one of them is read on
+the tick it is used.
+
+**Nothing here reimplements picking something up.** Both an item and an experience
+orb already know how to give themselves to a player, through `playerTouch`, which
+handles the pickup delay, whose the item is, the sound, the advancement, the pickup
+events other mods listen for, and, for an orb, mending before experience. Calling it
+is the difference between this mod having opinions about pickup and having none.
+
+One consequence worth knowing: orbs are absorbed at the rate the game absorbs them
+when walked over, which is one every other tick. A magnet gathers experience; it
+does not hurry it.
+
+The magnet works from anywhere in the inventory, not only in a hand — the point of
+the item is not having to hold it — and is switched off and on by right-clicking.
+Off is stored on the stack; a magnet that has never been touched works, so a fresh
+one carries no state at all and still stacks with another.
 
 ## Build
 
@@ -48,7 +66,8 @@ change.
 run.bat                   # compile and launch a dev client - double-clickable
 gradlew build             # produce the jar
 gradlew runGameTestServer # run every game test, headless, then exit
-gradlew runData           # regenerate models, recipes and language
+gradlew runData           # regenerate models, recipes, language, test structures
+python tools/make_textures.py   # regenerate the item sprite
 ```
 
 `JAVA_HOME` must point at a JDK 21, or `java` must be on `PATH`.
@@ -56,8 +75,21 @@ gradlew runData           # regenerate models, recipes and language
 ## Roadmap
 
 - [x] **0** — scaffold; the mod loads
-- [ ] **1** — the feature above, in a form that can be watched
-- [ ] **2** — checked by game tests rather than by eye
+- [x] **1** — the magnet: items and experience, a switch, settings, a recipe
+- [x] **2** — six game tests. Three of them are refusals — beyond the reach, still
+  inside the pickup delay, and switched off — because a magnet that takes too much
+  is worse than one that takes too little. Left open: watching it in a client, and
+  the DRAWN setting, which no test exercises
+- [ ] **3** — open questions below
+
+## Open questions
+
+- Whether one magnet with a configurable reach is right, or whether reach should be
+  something the player upgrades.
+- Whether DRAWN should aim at the player's feet rather than their eyes. It currently
+  aims at the eyes, which looks right for items and slightly wrong for orbs.
+- Whether to filter by what is being pulled — a whitelist would be a second kind of
+  setting and needs a reason before it earns one.
 
 ## Related
 
