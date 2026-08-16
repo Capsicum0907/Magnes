@@ -79,6 +79,9 @@ public final class Magnetism {
     /**
      * Whether anything should come to this player at all.
      *
+     * <p>Three places count, in order: a hand, a Curios slot where there is one, and
+     * the inventory. {@code mustBeHeld} cuts the list off after the first two.
+     *
      * <p>By default that means carrying a magnet. It is worth saying plainly, because
      * a mod that describes itself as "items come to the player" and then quietly does
      * nothing until you find an item nobody mentioned is a mod that looks broken —
@@ -89,6 +92,14 @@ public final class Magnetism {
             return true;
         }
         if (MagnetItem.isActive(player.getOffhandItem()) || MagnetItem.isActive(player.getMainHandItem())) {
+            return true;
+        }
+        // A worn magnet counts as one that is out, not as one in a bag. Wearing it is
+        // a deliberate act of putting it on, which is what mustBeHeld is asking for -
+        // the setting exists so that a magnet has to be equipped rather than merely
+        // carried, and a Curios slot is equipped. Anything else would make the slot
+        // useless to exactly the people who turned that setting on.
+        if (Mods.curios() && io.github.capsicum0907.magnes.curios.Worn.magnet(player)) {
             return true;
         }
         if (MagnesConfig.MUST_BE_HELD.get()) {

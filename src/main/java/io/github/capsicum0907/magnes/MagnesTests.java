@@ -13,6 +13,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -204,6 +208,30 @@ public final class MagnesTests {
     /** A point on the floor, that many blocks along z from where the player stands. */
     private static Vec3 at(GameTestHelper helper, int blocksAway) {
         return Vec3.atBottomCenterOf(helper.absolutePos(STANDING.offset(0, 0, blocksAway)));
+    }
+
+    /**
+     * A magnet can be worn, which is a fact about a data file rather than about code.
+     *
+     * <p>Curios decides what fits a slot by item tag - each slot is declared with
+     * {@code "validators": ["curios:tag"]} and looks for {@code curios:<slot>}. So the
+     * whole of "can this be equipped" is whether the magnet is in those tags, and a
+     * typo in a directory name would leave the code below working perfectly against a
+     * slot nothing could ever be put into.
+     *
+     * <p>It runs without Curios installed, which is the point twice over: the tag has
+     * to exist either way, and a tag file in a namespace no mod owns must not upset
+     * anything. This test loading at all is that second half.
+     */
+    @GameTest(template = TestStructures.FLOOR)
+    public static void aMagnetCanBeWorn(GameTestHelper helper) {
+        ItemStack magnet = new ItemStack(MagnesRegistry.MAGNET.get());
+        for (String slot : new String[] { "charm", "curio" }) {
+            TagKey<Item> fits = TagKey.create(Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath("curios", slot));
+            check(magnet.is(fits), "a magnet should be allowed in the " + slot + " slot");
+        }
+        helper.succeed();
     }
 
     private static void check(boolean condition, String expectation) {
