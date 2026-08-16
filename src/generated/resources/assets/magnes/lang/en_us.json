@@ -1,5 +1,6 @@
 {
   "item.magnes.magnet": "Magnet",
   "item.magnes.magnet.off": "Switched off",
-  "item.magnes.magnet.on": "Attracting"
+  "item.magnes.magnet.on": "Attracting",
+  "item.magnes.magnet.reach": "Reaches %s blocks"
 }

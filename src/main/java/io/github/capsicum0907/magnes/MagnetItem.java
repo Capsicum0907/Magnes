@@ -51,5 +51,15 @@ public class MagnetItem extends Item {
         boolean active = isActive(stack);
         lines.add(Component.translatable(active ? "item.magnes.magnet.on" : "item.magnes.magnet.off")
                 .withStyle(active ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+
+        // The reach is a server setting, so it is the server's answer that is worth
+        // showing — and it is worth showing at all because it is the number a player
+        // would otherwise have to go and read a file to learn. Guarded because the
+        // same tooltip can be drawn before any config has been loaded, on a title
+        // screen, where asking would throw.
+        if (MagnesConfig.SPEC.isLoaded()) {
+            lines.add(Component.translatable("item.magnes.magnet.reach", MagnesConfig.RADIUS.get())
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        }
     }
 }

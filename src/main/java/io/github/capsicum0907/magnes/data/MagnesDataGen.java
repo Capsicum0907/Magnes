@@ -83,6 +83,7 @@ public final class MagnesDataGen {
             add(MagnesRegistry.MAGNET.get(), "Magnet");
             add("item.magnes.magnet.on", "Attracting");
             add("item.magnes.magnet.off", "Switched off");
+            add("item.magnes.magnet.reach", "Reaches %s blocks");
         }
     }
 
