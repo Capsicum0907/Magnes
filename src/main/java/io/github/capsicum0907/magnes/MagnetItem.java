@@ -42,11 +42,9 @@ public class MagnetItem extends Item {
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
-    /** The state has to be visible from the inventory, where the item does its work. */
-    @Override
-    public boolean isFoil(ItemStack stack) {
-        return isActive(stack);
-    }
+    // No isFoil. The state is shown by which texture is drawn — colour when it is
+    // working, grey when it is not — because an enchantment glint over a red and blue
+    // item is a state indicator nobody can see.
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {

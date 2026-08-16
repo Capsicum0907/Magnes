@@ -12,11 +12,13 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -47,9 +49,27 @@ public final class MagnesDataGen {
             super(output, Magnes.MODID, existingFileHelper);
         }
 
+        /**
+         * Two textures, chosen by whether the magnet is on. The base model is the
+         * switched-off one and the override is the working one, because that is the
+         * way round model overrides go: the plain model is what is drawn when no
+         * predicate matches.
+         *
+         * <p>An enchantment glint would have been less work and is what this used to
+         * do. It is also nearly invisible against a red and blue item, which makes it
+         * a state indicator that does not indicate state.
+         */
         @Override
         protected void registerModels() {
-            basicItem(MagnesRegistry.MAGNET.get());
+            ItemModelBuilder attracting = withExistingParent("magnet_on", mcLoc("item/generated"))
+                    .texture("layer0", modLoc("item/magnet"));
+
+            withExistingParent("magnet", mcLoc("item/generated"))
+                    .texture("layer0", modLoc("item/magnet_off"))
+                    .override()
+                    .predicate(ResourceLocation.fromNamespaceAndPath(Magnes.MODID, "active"), 1.0F)
+                    .model(attracting)
+                    .end();
         }
     }
 

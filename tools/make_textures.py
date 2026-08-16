@@ -23,7 +23,9 @@ import zlib
 
 SIZE = 16
 
-OUT = pathlib.Path(__file__).resolve().parents[1] / "src/main/resources/assets/magnes/textures/item/magnet.png"
+ITEMS = pathlib.Path(__file__).resolve().parents[1] / "src/main/resources/assets/magnes/textures/item"
+OUT = ITEMS / "magnet.png"
+OUT_OFF = ITEMS / "magnet_off.png"
 
 # --- shape -----------------------------------------------------------------
 # A bar, not a horseshoe. A horseshoe at this size has arms four pixels wide, which
@@ -125,7 +127,19 @@ def _png(pixels: dict[tuple[int, int], tuple[int, int, int, int]]) -> bytes:
     )
 
 
-def draw() -> bytes:
+def _grey(colour: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    """The same pixel with the colour taken out of it, by perceived brightness.
+
+    Derived rather than drawn as a second palette: the switched-off magnet has to be
+    recognisably the same object, and two hand-picked palettes drift apart the moment
+    one of them is edited.
+    """
+    red, green, blue, alpha = colour
+    lit = round(0.2126 * red + 0.7152 * green + 0.0722 * blue)
+    return (lit, lit, lit, alpha)
+
+
+def draw(lit: bool) -> bytes:
     pixels: dict[tuple[int, int], tuple[int, int, int, int]] = {}
     for pixel in SHAPE:
         # Shaded against the whole silhouette, coloured by which pole it belongs to,
@@ -135,13 +149,17 @@ def draw() -> bytes:
         pixels[pixel] = _rgba(_tone(pixel, SHAPE, tones))
     for pixel in MARKS:
         pixels[pixel] = _rgba(MARK_COLOUR)
+    if not lit:
+        pixels = {at: _grey(colour) for at, colour in pixels.items()}
     return _png(pixels)
 
 
 def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_bytes(draw())
+    OUT.write_bytes(draw(True))
     print(f"wrote {OUT}")
+    OUT_OFF.write_bytes(draw(False))
+    print(f"wrote {OUT_OFF}")
 
 
 if __name__ == "__main__":

@@ -53,4 +53,11 @@ public class Magnes {
             Magnetism.sweep(event.getEntity());
         }
     }
+    /** Drawing is a client concern, and this is the only place that knows it exists. */
+    @net.neoforged.fml.common.Mod(value = MODID, dist = net.neoforged.api.distmarker.Dist.CLIENT)
+    public static class Client {
+        public Client(IEventBus modEventBus, ModContainer modContainer) {
+            modEventBus.addListener(io.github.capsicum0907.magnes.client.MagnesClient::registerProperties);
+        }
+    }
 }
