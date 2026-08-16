@@ -34,7 +34,7 @@ public final class Magnetism {
         if (player.level().isClientSide || !player.isAlive() || player.isSpectator()) {
             return;
         }
-        if (!MagnesConfig.ENABLED.get() || !carriesActiveMagnet(player)) {
+        if (!MagnesConfig.ENABLED.get() || !isMagnetic(player)) {
             return;
         }
 
@@ -76,7 +76,18 @@ public final class Magnetism {
         entity.hasImpulse = true;
     }
 
-    private static boolean carriesActiveMagnet(Player player) {
+    /**
+     * Whether anything should come to this player at all.
+     *
+     * <p>By default that means carrying a magnet. It is worth saying plainly, because
+     * a mod that describes itself as "items come to the player" and then quietly does
+     * nothing until you find an item nobody mentioned is a mod that looks broken —
+     * which is exactly how this one looked the first time it was played.
+     */
+    private static boolean isMagnetic(Player player) {
+        if (!MagnesConfig.NEEDS_MAGNET.get()) {
+            return true;
+        }
         if (MagnetItem.isActive(player.getOffhandItem()) || MagnetItem.isActive(player.getMainHandItem())) {
             return true;
         }

@@ -12,6 +12,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -57,15 +59,27 @@ public final class MagnesTests {
         helper.succeed();
     }
 
+    /**
+     * The reach is set here rather than assumed. It is a setting, and a test that
+     * leans on whatever the person running it happens to have configured is a test
+     * that fails for reasons that have nothing to do with the code — as this one did,
+     * against a config where the reach had been raised to thirty-two.
+     */
     @GameTest(template = TestStructures.FLOOR)
     public static void leavesItemsBeyondReach(GameTestHelper helper) {
-        ServerPlayer player = playerWithMagnet(helper);
-        ItemEntity item = drop(helper, FAR);
+        double was = MagnesConfig.RADIUS.get();
+        try {
+            MagnesConfig.RADIUS.set(6.0);
+            ServerPlayer player = playerWithMagnet(helper);
+            ItemEntity item = drop(helper, FAR);
 
-        Magnetism.sweep(player);
+            Magnetism.sweep(player);
 
-        check(!item.isRemoved(), "an item nine blocks away is outside the reach and should be left");
-        helper.succeed();
+            check(!item.isRemoved(), "an item nine blocks from a six block reach should be left");
+            helper.succeed();
+        } finally {
+            MagnesConfig.RADIUS.set(was);
+        }
     }
 
     /**
@@ -123,6 +137,51 @@ public final class MagnesTests {
         Magnetism.sweep(player);
 
         check(!item.isRemoved(), "a player carrying no magnet should take nothing");
+        helper.succeed();
+    }
+
+    /**
+     * Turning off the requirement makes everybody magnetic.
+     *
+     * <p>This exists because the mod's first outing looked broken: it described itself
+     * as "items come to the player", offered a master switch called {@code enabled},
+     * and then did nothing at all, because it wanted an item nobody had been told
+     * about. The setting is for people who wanted that reading to be the true one.
+     */
+    @GameTest(template = TestStructures.FLOOR)
+    public static void everyoneIsMagneticWhenTheItemIsNotNeeded(GameTestHelper helper) {
+        boolean was = MagnesConfig.NEEDS_MAGNET.get();
+        try {
+            MagnesConfig.NEEDS_MAGNET.set(false);
+            ServerPlayer player = helper.makeMockServerPlayerInLevel();
+            player.setPos(at(helper, 0));
+            ItemEntity item = drop(helper, NEAR);
+
+            Magnetism.sweep(player);
+
+            check(item.isRemoved(), "with needsMagnet off, an empty-handed player should still pull");
+            helper.succeed();
+        } finally {
+            MagnesConfig.NEEDS_MAGNET.set(was);
+        }
+    }
+
+    /**
+     * The tick actually reaches the sweep.
+     *
+     * <p>Every other test here calls {@link Magnetism#sweep} directly, which is what
+     * made them easy to write and also what left the one thing between the game and
+     * the sweep — the listener — with nothing checking it. A mod that is wired to
+     * nothing passes every test about what it would do.
+     */
+    @GameTest(template = TestStructures.FLOOR)
+    public static void theTickReachesTheSweep(GameTestHelper helper) {
+        ServerPlayer player = playerWithMagnet(helper);
+        ItemEntity item = drop(helper, NEAR);
+
+        NeoForge.EVENT_BUS.post(new PlayerTickEvent.Post(player));
+
+        check(item.isRemoved(), "a player tick should have reached the sweep and taken the item");
         helper.succeed();
     }
 

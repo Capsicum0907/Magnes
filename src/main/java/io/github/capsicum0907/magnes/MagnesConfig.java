@@ -24,8 +24,17 @@ public final class MagnesConfig {
     }
 
     public static final ModConfigSpec.BooleanValue ENABLED = BUILDER
-            .comment("Master switch. When off, a magnet does nothing no matter its own state.")
+            .comment("Master switch. When off, nothing is pulled to anybody, whatever they carry.",
+                    "On does not mean everybody is magnetic - see needsMagnet just below.")
             .define("enabled", true);
+
+    public static final ModConfigSpec.BooleanValue NEEDS_MAGNET = BUILDER
+            .comment("Whether a player has to be carrying the magnet item for any of this to happen.",
+                    "On: the magnet is a thing you make and hold. Off: every player is magnetic,",
+                    "always, and the item is decoration.",
+                    "This is the setting somebody looking for 'why is nothing being picked up'",
+                    "actually wants, so it is named after the question rather than after the code.")
+            .define("needsMagnet", true);
 
     public static final ModConfigSpec.DoubleValue RADIUS = BUILDER
             .comment("How far a magnet reaches, in blocks, measured from the player.")

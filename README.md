@@ -17,6 +17,26 @@ Items and experience come to you.
 
 1.21.1 is the version large tech mods stayed on, so it is where this mod is useful.
 
+## Using one
+
+**Craft a magnet and carry it.** Four iron and a block of redstone, laid out as the
+thing it is:
+
+```
+I I
+I I
+ R
+```
+
+It works from anywhere in the inventory — the point of it is not having to hold it —
+and is switched off and on by right-clicking. It glows while it is on.
+
+**Nothing happens without one.** That sentence is here because the mod's first
+outing looked broken: it described itself as "items come to the player", offered a
+master switch called `enabled`, and then sat there, waiting for an item nobody had
+been told existed. If everybody being magnetic is the wanted reading, set
+`needsMagnet = false` and it becomes the true one.
+
 ## Design
 
 Dropped items and experience orbs near a player move to the player rather than
