@@ -4,8 +4,8 @@ Items and experience come to you.
 
 *Magnes* is Latin for a magnet, and the lodestone it is cut from.
 
-> **Status: stage 2.** The magnet works and six game tests pass headlessly.
-> Not yet watched in a running client.
+> **Status: released, 1.0.0.** Verified in a client, and six game tests pass
+> headlessly.
 
 ## Target
 
@@ -98,8 +98,9 @@ python tools/make_textures.py   # regenerate the item sprite
 - [x] **1** — the magnet: items and experience, a switch, settings, a recipe
 - [x] **2** — six game tests. Three of them are refusals — beyond the reach, still
   inside the pickup delay, and switched off — because a magnet that takes too much
-  is worse than one that takes too little. Left open: watching it in a client, and
-  the DRAWN setting, which no test exercises
+  is worse than one that takes too little. The DRAWN setting is still one no test
+  exercises
+- [x] **Release** — 1.0.0, after being played with in a client
 - [ ] **3** — open questions below
 
 ## Open questions
@@ -124,4 +125,8 @@ none of the others: [Fodina](https://github.com/Capsicum0907/Fodina),
 
 ## License
 
-Not decided yet. Until it is, the metadata says All Rights Reserved.
+MIT. Decided on 2026-09-17.
+
+MIT is the choice that puts the fewest obstacles in front of a modpack: All Rights
+Reserved would have meant pack authors quietly leaving it out. It also matches the
+rest of the set, so nobody has to check which of them is which.
