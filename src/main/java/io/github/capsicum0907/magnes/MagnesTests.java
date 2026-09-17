@@ -21,30 +21,15 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-/**
- * What a magnet does and, more to the point, what it leaves alone.
- *
- * <p>Three of these are refusals. A magnet that takes too much is worse than one
- * that takes too little: a player who cannot drop an item, or whose neighbour's
- * death pile walks away, has a bug they cannot work around.
- *
- * <p>Run with {@code gradlew runGameTestServer}.
- */
 @GameTestHolder(Magnes.MODID)
 @PrefixGameTestTemplate(false)
-// makeMockServerPlayerInLevel is marked for removal and has no replacement offered.
-// A plain mock player is not a ServerPlayer, and an experience orb only gives itself
-// to one of those, so there is nothing else to test the experience half with. When it
-// goes, this is the line that has to be answered.
+// makeMockServerPlayerInLevel has no replacement, and an orb only gives itself to a ServerPlayer.
 @SuppressWarnings("removal")
 public final class MagnesTests {
-    /** The middle of the floor, with room in every direction. */
     private static final BlockPos STANDING = new BlockPos(10, 1, 10);
 
-    /** Well inside the default reach of six blocks. */
     private static final int NEAR = 2;
 
-    /** Well outside it, and still on the floor. */
     private static final int FAR = 9;
 
     private MagnesTests() {
@@ -63,16 +48,11 @@ public final class MagnesTests {
         helper.succeed();
     }
 
-    /**
-     * The reach is set here rather than assumed. It is a setting, and a test that
-     * leans on whatever the person running it happens to have configured is a test
-     * that fails for reasons that have nothing to do with the code — as this one did,
-     * against a config where the reach had been raised to thirty-two.
-     */
     @GameTest(template = TestStructures.FLOOR)
     public static void leavesItemsBeyondReach(GameTestHelper helper) {
         double was = MagnesConfig.RADIUS.get();
         try {
+            // Set, not assumed: the config this runs against may have a different reach.
             MagnesConfig.RADIUS.set(6.0);
             ServerPlayer player = playerWithMagnet(helper);
             ItemEntity item = drop(helper, FAR);
@@ -86,11 +66,6 @@ public final class MagnesTests {
         }
     }
 
-    /**
-     * The pickup delay is what makes dropping something possible. Without honouring
-     * it a magnet would take back everything the player threw, the instant they
-     * threw it — and would reach into a stranger's fresh death pile.
-     */
     @GameTest(template = TestStructures.FLOOR)
     public static void leavesItemsJustDropped(GameTestHelper helper) {
         ServerPlayer player = playerWithMagnet(helper);
@@ -144,14 +119,6 @@ public final class MagnesTests {
         helper.succeed();
     }
 
-    /**
-     * Turning off the requirement makes everybody magnetic.
-     *
-     * <p>This exists because the mod's first outing looked broken: it described itself
-     * as "items come to the player", offered a master switch called {@code enabled},
-     * and then did nothing at all, because it wanted an item nobody had been told
-     * about. The setting is for people who wanted that reading to be the true one.
-     */
     @GameTest(template = TestStructures.FLOOR)
     public static void everyoneIsMagneticWhenTheItemIsNotNeeded(GameTestHelper helper) {
         boolean was = MagnesConfig.NEEDS_MAGNET.get();
@@ -170,14 +137,6 @@ public final class MagnesTests {
         }
     }
 
-    /**
-     * The tick actually reaches the sweep.
-     *
-     * <p>Every other test here calls {@link Magnetism#sweep} directly, which is what
-     * made them easy to write and also what left the one thing between the game and
-     * the sweep — the listener — with nothing checking it. A mod that is wired to
-     * nothing passes every test about what it would do.
-     */
     @GameTest(template = TestStructures.FLOOR)
     public static void theTickReachesTheSweep(GameTestHelper helper) {
         ServerPlayer player = playerWithMagnet(helper);
@@ -205,24 +164,10 @@ public final class MagnesTests {
         return item;
     }
 
-    /** A point on the floor, that many blocks along z from where the player stands. */
     private static Vec3 at(GameTestHelper helper, int blocksAway) {
         return Vec3.atBottomCenterOf(helper.absolutePos(STANDING.offset(0, 0, blocksAway)));
     }
 
-    /**
-     * A magnet can be worn, which is a fact about a data file rather than about code.
-     *
-     * <p>Curios decides what fits a slot by item tag - each slot is declared with
-     * {@code "validators": ["curios:tag"]} and looks for {@code curios:<slot>}. So the
-     * whole of "can this be equipped" is whether the magnet is in those tags, and a
-     * typo in a directory name would leave the code below working perfectly against a
-     * slot nothing could ever be put into.
-     *
-     * <p>It runs without Curios installed, which is the point twice over: the tag has
-     * to exist either way, and a tag file in a namespace no mod owns must not upset
-     * anything. This test loading at all is that second half.
-     */
     @GameTest(template = TestStructures.FLOOR)
     public static void aMagnetCanBeWorn(GameTestHelper helper) {
         ItemStack magnet = new ItemStack(MagnesRegistry.MAGNET.get());

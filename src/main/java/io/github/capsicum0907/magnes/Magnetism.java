@@ -11,25 +11,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * The whole of what the mod does, in one call.
- *
- * <p>It is a plain method rather than the body of an event handler so that a test
- * can run one sweep and look at the result, instead of having to arrange for a tick
- * to happen to a real player.
- *
- * <p><b>Nothing here reimplements picking something up.</b> Both an item and an
- * experience orb already know how to give themselves to a player — through
- * {@code playerTouch}, which handles the pickup delay, whose the item is, the sound,
- * the advancement, the pickup events other mods listen for, and, for an orb, mending
- * before experience. Calling it is the difference between this mod having opinions
- * about pickup and having none.
- */
 public final class Magnetism {
     private Magnetism() {
     }
 
-    /** One sweep for one player. Safe to call every tick; does nothing without a magnet. */
     public static void sweep(Player player) {
         if (player.level().isClientSide || !player.isAlive() || player.isSpectator()) {
             return;
@@ -51,12 +36,6 @@ public final class Magnetism {
         }
     }
 
-    /**
-     * An item still inside its pickup delay is left alone. That delay is what makes
-     * dropping something possible at all: without honouring it, a magnet would take
-     * back everything the player threw, the instant they threw it. It is also what
-     * keeps another player's fresh death drop out of reach.
-     */
     private static Predicate<ItemEntity> free() {
         return item -> item.isAlive() && !item.hasPickUpDelay();
     }
@@ -69,24 +48,13 @@ public final class Magnetism {
 
         Vec3 toward = player.getEyePosition().subtract(entity.position());
         if (toward.lengthSqr() < 1.0e-4) {
-            entity.playerTouch(player); // close enough that a direction would be noise
+            entity.playerTouch(player);
             return;
         }
         entity.setDeltaMovement(toward.normalize().scale(MagnesConfig.DRAWN_SPEED.get()));
         entity.hasImpulse = true;
     }
 
-    /**
-     * Whether anything should come to this player at all.
-     *
-     * <p>Three places count, in order: a hand, a Curios slot where there is one, and
-     * the inventory. {@code mustBeHeld} cuts the list off after the first two.
-     *
-     * <p>By default that means carrying a magnet. It is worth saying plainly, because
-     * a mod that describes itself as "items come to the player" and then quietly does
-     * nothing until you find an item nobody mentioned is a mod that looks broken —
-     * which is exactly how this one looked the first time it was played.
-     */
     private static boolean isMagnetic(Player player) {
         if (!MagnesConfig.NEEDS_MAGNET.get()) {
             return true;
@@ -94,11 +62,6 @@ public final class Magnetism {
         if (MagnetItem.isActive(player.getOffhandItem()) || MagnetItem.isActive(player.getMainHandItem())) {
             return true;
         }
-        // A worn magnet counts as one that is out, not as one in a bag. Wearing it is
-        // a deliberate act of putting it on, which is what mustBeHeld is asking for -
-        // the setting exists so that a magnet has to be equipped rather than merely
-        // carried, and a Curios slot is equipped. Anything else would make the slot
-        // useless to exactly the people who turned that setting on.
         if (Mods.curios() && io.github.capsicum0907.magnes.curios.Worn.magnet(player)) {
             return true;
         }

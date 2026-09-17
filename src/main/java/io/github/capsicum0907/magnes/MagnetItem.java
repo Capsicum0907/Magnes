@@ -14,17 +14,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-/**
- * The magnet. It carries no behaviour of its own: {@link Magnetism} looks for one
- * in the player's inventory each tick and does the work. What lives here is the
- * switch, and saying which way the switch is set.
- */
 public class MagnetItem extends Item {
     public MagnetItem(Properties properties) {
         super(properties.stacksTo(1));
     }
 
-    /** Absent means on, so a magnet that has never been switched works. */
     public static boolean isActive(ItemStack stack) {
         return stack.getItem() instanceof MagnetItem
                 && stack.getOrDefault(MagnesRegistry.ACTIVE.get(), Boolean.TRUE);
@@ -36,15 +30,10 @@ public class MagnetItem extends Item {
         boolean now = !isActive(stack);
         stack.set(MagnesRegistry.ACTIVE.get(), now);
 
-        // Pitched up for on and down for off, so the two are told apart without looking.
         level.playSound(null, player.blockPosition(), SoundEvents.LEVER_CLICK, SoundSource.PLAYERS,
                 0.6F, now ? 1.2F : 0.8F);
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
-
-    // No isFoil. The state is shown by which texture is drawn — colour when it is
-    // working, grey when it is not — because an enchantment glint over a red and blue
-    // item is a state indicator nobody can see.
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
@@ -52,11 +41,6 @@ public class MagnetItem extends Item {
         lines.add(Component.translatable(active ? "item.magnes.magnet.on" : "item.magnes.magnet.off")
                 .withStyle(active ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 
-        // The reach is a server setting, so it is the server's answer that is worth
-        // showing — and it is worth showing at all because it is the number a player
-        // would otherwise have to go and read a file to learn. Guarded because the
-        // same tooltip can be drawn before any config has been loaded, on a title
-        // screen, where asking would throw.
         if (MagnesConfig.SPEC.isLoaded()) {
             lines.add(Component.translatable("item.magnes.magnet.reach", MagnesConfig.RADIUS.get())
                     .withStyle(ChatFormatting.DARK_GRAY));

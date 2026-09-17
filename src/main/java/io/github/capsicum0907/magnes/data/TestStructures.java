@@ -21,19 +21,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * The stage the game tests run on: a flat floor with clear air above it.
- *
- * <p>A game test needs a structure to be placed in, and there is no empty one to
- * borrow. Writing the NBT here rather than checking a binary into the repository
- * keeps the rule that generated files are generated, and the data version comes
- * from the game itself so it cannot drift out of date silently.
- *
- * <p>It is wide because this mod is about distance: a test that something outside
- * the reach is left alone needs room to put that something.
- */
 public class TestStructures implements DataProvider {
-    /** Referenced by {@code @GameTest(template = ...)}. */
     public static final String FLOOR = "floor";
 
     static final int WIDTH = 20;
@@ -69,8 +57,7 @@ public class TestStructures implements DataProvider {
         palette.add(named(FLOOR_BLOCK));
         tag.put("palette", palette);
 
-        // Every cell is listed, air included: an omitted cell is left as whatever was
-        // already there, which would let one test leave something behind for the next.
+        // Air is listed too: an omitted cell keeps whatever the previous test left there.
         ListTag blocks = new ListTag();
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {

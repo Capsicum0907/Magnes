@@ -8,13 +8,6 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-/**
- * The client half: one number, so that a model can be picked from it.
- *
- * <p>The property has to be registered here rather than declared in the model,
- * because a model override reads a number off the stack and something has to say
- * where that number comes from.
- */
 public final class MagnesClient {
     private MagnesClient() {
     }
