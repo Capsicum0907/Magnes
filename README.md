@@ -4,7 +4,7 @@ Items and experience come to you.
 
 *Magnes* is Latin for a magnet, and the lodestone it is cut from.
 
-> **Status: released, 1.0.0.** Verified in a client, and six game tests pass
+> **Status: released, 1.0.0.** Verified in a client, and nine game tests pass
 > headlessly.
 
 ## Target
