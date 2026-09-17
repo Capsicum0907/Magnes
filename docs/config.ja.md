@@ -2,8 +2,9 @@
 
 [English](config.md) | 日本語
 
-サーバー設定です。ワールドフォルダ内の `serverconfig/magnes-server.toml` に置かれます。
-どの値も使うそのティックに読むので、変更は再起動なしで反映されます。
+サーバー設定です。ゲームフォルダの `config/magnes-server.toml` に置かれます。
+ワールド内の `serverconfig/magnes-server.toml` に写しを置くと、そのワールドではそちらが優先されます。
+どの値も使うそのティックに読みます。
 
 | キー | 既定値 | 範囲 | 働き |
 |---|---|---|---|

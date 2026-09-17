@@ -2,8 +2,9 @@
 
 English | [日本語](config.ja.md)
 
-A server config: `serverconfig/magnes-server.toml` in the world folder. Every value is read
-on the tick it is used, so changes take effect without a restart.
+A server config: `config/magnes-server.toml` in the game folder. A copy placed at
+`serverconfig/magnes-server.toml` inside a world overrides it for that world. Every value is
+read on the tick it is used.
 
 | Key | Default | Range | What it does |
 |---|---|---|---|
