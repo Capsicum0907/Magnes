@@ -1,5 +1,7 @@
 # Magnes
 
+English | [日本語](README.ja.md)
+
 Items and experience come to you.
 
 *Magnes* is Latin for a magnet, and the lodestone it is cut from.
@@ -83,6 +85,10 @@ The magnet works from anywhere in the inventory, not only in a hand — the poin
 the item is not having to hold it — and is switched off and on by right-clicking.
 Off is stored on the stack; a magnet that has never been touched works, so a fresh
 one carries no state at all.
+
+The details — the order a magnet is looked for in, the Curios guard, the tests — are in
+[docs/how-it-works.md](docs/how-it-works.md). Every setting is listed in
+[docs/config.md](docs/config.md).
 
 ## Build
 
