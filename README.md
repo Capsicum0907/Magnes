@@ -29,13 +29,17 @@ I I
 ```
 
 It works from anywhere in the inventory — the point of it is not having to hold it —
-and is switched off and on by right-clicking. It glows while it is on.
+and is switched off and on by right-clicking. It is drawn in colour while it is on,
+and grey while it is off.
+
+With [Curios](https://www.curseforge.com/minecraft/mc-mods/curios) installed it can be
+worn in a charm slot as well, and a worn magnet counts as held. Curios is optional.
 
 **Nothing happens without one.** That sentence is here because the mod's first
 outing looked broken: it described itself as "items come to the player", offered a
 master switch called `enabled`, and then sat there, waiting for an item nobody had
 been told existed. If everybody being magnetic is the wanted reading, set
-`needsMagnet = false` and it becomes the true one.
+`needed = false` under `[magnet]` and it becomes the true one.
 
 ## Design
 
@@ -78,7 +82,7 @@ does not hurry it.
 The magnet works from anywhere in the inventory, not only in a hand — the point of
 the item is not having to hold it — and is switched off and on by right-clicking.
 Off is stored on the stack; a magnet that has never been touched works, so a fresh
-one carries no state at all and still stacks with another.
+one carries no state at all.
 
 ## Build
 
